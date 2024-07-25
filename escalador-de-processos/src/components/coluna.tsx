@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Tabela = () => {
+const Coluna = () => {
     return (
         <div className='bg-white w-1/2 rounded'>
           <p className="text-black">tabela</p>
@@ -8,4 +8,4 @@ const Tabela = () => {
     );
 }
 
-export default Tabela;
+export default Coluna;

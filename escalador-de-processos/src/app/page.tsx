@@ -1,7 +1,8 @@
 'use client'
 import Botoes from "@/components/botoes";
 import Quantum from "@/components/quantum";
-import Tabela from "@/components/tabela";
+import Coluna from "@/components/Coluna";
+import Processo from "@/components/processo";
 import Image from "next/image";
 
 export default function Home() {
@@ -11,8 +12,8 @@ export default function Home() {
           <Botoes/>
           <Quantum/>
         </div>
-
-        <Tabela/>
+        <Processo/>
+        <Coluna/>
 
     </main>
   );
