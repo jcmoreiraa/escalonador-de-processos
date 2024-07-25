@@ -1,7 +1,7 @@
 'use client'
 import Botoes from "@/components/botoes";
 import Quantum from "@/components/quantum";
-import Coluna from "@/components/Coluna";
+import Coluna from "@/components/coluna";
 import Processo from "@/components/processo";
 import Image from "next/image";
 
