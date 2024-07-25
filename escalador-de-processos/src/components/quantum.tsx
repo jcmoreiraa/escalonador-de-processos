@@ -13,7 +13,7 @@ const Quantum = () => {
     }
 
     return (
-        <div className='flex flex-col gap-5 font-bold'>
+        <div className='flex flex-col gap-5 font-bold text-black'>
             <label>
                 Quantum:
                 <input
