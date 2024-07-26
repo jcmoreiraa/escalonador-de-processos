@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+type Props = {
+    valorQuantum: (quantum:string) => void;
+}
 
-const Quantum = () => {
+const Quantum = ({valorQuantum}:Props) => {
     const [quantum, setQuantum] = useState('');
     const [sobrecarga, setSobrecarga] = useState('');
 
     const handleQuantumChange = (e:any) => {
         setQuantum(e.target.value);
+        valorQuantum(quantum);
     }
 
     const handleSobrecargaChange = (e:any) => {
