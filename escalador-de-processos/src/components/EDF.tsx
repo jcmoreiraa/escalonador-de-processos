@@ -91,9 +91,9 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 if (!statusGrid[startRow]) {
                     statusGrid[startRow] = [];
                 }
-                if (col > processoDeadline && statusGrid[startRow][col] != 'red') {
+                if (col >= processoDeadline && statusGrid[startRow][col] != 'red') {
                     statusGrid[startRow][col] = 'black' ;
-                } else if (statusGrid[startRow][col] === undefined) {
+                } else if (statusGrid[startRow][col] === undefined ) {
                     statusGrid[startRow][col] = 'yellow';
                 }
             }
