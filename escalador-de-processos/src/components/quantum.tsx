@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
+
 type Props = {
-    valorQuantum: (quantum:string) => void;
+    valorQuantum: (quantum: string) => void;
+    valorSobrecarga: (sobrecarga: string) => void;
 }
 
-const Quantum = ({valorQuantum}:Props) => {
+const Quantum = ({ valorQuantum, valorSobrecarga }: Props) => {
     const [quantum, setQuantum] = useState('');
     const [sobrecarga, setSobrecarga] = useState('');
 
-    const handleQuantumChange = (e:any) => {
-        setQuantum(e.target.value);
-        valorQuantum(quantum);
+    const handleQuantumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setQuantum(newValue);
+        valorQuantum(newValue); 
     }
 
-    const handleSobrecargaChange = (e:any) => {
-        setSobrecarga(e.target.value);
+    const handleSobrecargaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setSobrecarga(newValue);
+        valorSobrecarga(newValue); 
     }
 
     return (
@@ -21,12 +26,12 @@ const Quantum = ({valorQuantum}:Props) => {
             <label>
                 Quantum:
                 <input
-                   type='number'
-                   min={1}
-                   max={99}
-                   value={quantum}
-                   onChange={handleQuantumChange}
-                   className='ml-2 max-w-[40px] pl-1 bg-gray-300 rounded-sm'
+                    type='number'
+                    min={1}
+                    max={99}
+                    value={quantum}
+                    onChange={handleQuantumChange}
+                    className='ml-2 max-w-[40px] pl-1 bg-gray-300 rounded-sm'
                 />
             </label>
             <label>
@@ -38,7 +43,7 @@ const Quantum = ({valorQuantum}:Props) => {
                     value={sobrecarga}
                     onChange={handleSobrecargaChange}
                     className='ml-2 max-w-[40px] pl-1 bg-gray-300 rounded-sm'
-                    />
+                />
             </label>
         </div>
     );

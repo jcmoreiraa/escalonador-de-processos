@@ -5,9 +5,11 @@ import Quantum from "@/components/quantum";
 import Coluna from "@/components/coluna";
 import Modal from "@/components/modal";
 import FIFO from "@/components/FIFO";
-import SJF from "@/components/SJF"; // Importa o componente SJF
+import SJF from "@/components/SJF"; 
 import Image from "next/image";
 import styled from "styled-components";
+import EDF from "@/components/EDF";
+import RR from "@/components/RR";
 
 const TableContainer = styled.div`
   width: 50%;
@@ -21,8 +23,10 @@ const TableContainer = styled.div`
 type Processo = {
   chegada: number;
   duracao: number;
-  deadline?: number;
+  deadline: number;
   codigo: number;
+
+  
 }
 
 export default function Home() {
@@ -59,7 +63,7 @@ export default function Home() {
     <main className="flex flex-col align-center justify-center bg-white p-24 gap-y-80">
       <div className="flex flex-row justify-around bg-slate-100 min-h-36 gap-y-44 p-5 rounded-3xl">
         <Botoes selecionarEscalonamento={selecionarEscalonamento} setSelecionarEscalonamento={setSelecionarEscalonamento} />
-        <Quantum valorQuantum={setQuantum}/>
+        <Quantum valorQuantum={setQuantum} valorSobrecarga={setSobrecarga}/>
         <Modal numeroDoProcesso={numeroDoProcesso} onClick={handleCreateProcess} />
         <TableContainer>
           {tabelaProcessos.map((processo) => (
@@ -83,6 +87,9 @@ export default function Home() {
 
       {selecionarEscalonamento === 'FIFO' && <FIFO tabela={tabelaProcessos} linhas={tabelaProcessos.length}/>}
       {selecionarEscalonamento === 'SJF' && <SJF tabela={tabelaProcessos} linhas={tabelaProcessos.length}/>}
+      {selecionarEscalonamento === 'EDF' && <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)}/>}
+      {selecionarEscalonamento === 'RR' && <RR tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)}/>}
+
     </main>
   );
 }
