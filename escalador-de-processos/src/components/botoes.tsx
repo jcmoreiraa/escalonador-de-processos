@@ -10,7 +10,6 @@ const Botoes: React.FC<BotoesProps> = ({ selecionarEscalonamento, setSelecionarE
   const handleEscalonamentoChange = (e: any) => {
     const escalonamento = e.target.value;
     const novoEscalonamento = escalonamento === selecionarEscalonamento ? null : escalonamento;
-    console.log(novoEscalonamento)
     setSelecionarEscalonamento(novoEscalonamento);
   }
 

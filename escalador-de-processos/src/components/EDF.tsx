@@ -6,11 +6,8 @@ type Processo = {
     duracao: number;
     deadline: number;
     codigo: number;
-    salvarDuracao?:number;
-    
-    
-
-}
+    salvarDuracao?: number;
+};
 
 type Props = {
     linhas: number;
@@ -19,11 +16,9 @@ type Props = {
     sobrecarga: number;
 };
 
-
 const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
     const salvarDuracao = tabela.map((processo, index) => ({ ...processo, salvarDuracao: processo.duracao }));
-
 
     const sortedTabela: Processo[] = salvarDuracao.map((processo, index) => ({
         ...processo,
@@ -58,11 +53,12 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             });
 
             if (!processoAtual || processoAtual.duracao <= 0) {
-                processoAtual = fila.shift();
-            }
-
-            if (processoAtual === undefined) { // Qual o sentido
-                continue;
+                processoAtual = fila.find(p => p.chegada <= processoTerminou);
+                if (!processoAtual) {
+                    processoTerminou++;
+                    continue;
+                }
+                fila = fila.filter(p => p !== processoAtual);
             }
 
             const startRow = processoAtual.originalIndex;
@@ -99,8 +95,8 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                     statusGrid[startRow] = [];
                 }
                 if (col > processoDeadline && statusGrid[startRow][col] != 'red') {
-                    statusGrid[startRow][col] = 'black' ;
-                } else if (statusGrid[startRow][col] === undefined ) {
+                    statusGrid[startRow][col] = 'black';
+                } else if (statusGrid[startRow][col] === undefined) {
                     statusGrid[startRow][col] = 'yellow';
                 }
             }

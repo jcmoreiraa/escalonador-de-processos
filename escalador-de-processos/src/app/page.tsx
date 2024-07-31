@@ -50,7 +50,6 @@ export default function Home() {
       codigo: numeroDoProcesso
     };
 
-    console.log(newProcesso);
 
     setTabelaProcessos((prevTabelaProcessos) => [...prevTabelaProcessos, newProcesso]);
     setNumeroDoProcesso((prevNumero) => prevNumero + 1);

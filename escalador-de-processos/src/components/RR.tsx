@@ -16,7 +16,6 @@ type Props = {
 const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
 
-    // Ordena os processos pela chegada
     const sortedTabela: Processo[] = tabela.map((processo, index) => ({
         ...processo,
         originalIndex: index
@@ -31,7 +30,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     let processoAtual: Processo | undefined = undefined;
 
     while (TOTAL_QUANTUM > 0) {
-        // Se não há processo atual ou o processo atual terminou, busca um novo
         if (!processoAtual || processoAtual.duracao <= 0) {
             processoAtual = fila.find(p => p.chegada <= processoTerminou);
             if (processoAtual) {
@@ -40,7 +38,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         }
 
         if (processoAtual === undefined) {
-            // Se não há processos prontos, avance o tempo até o próximo processo chegar
             processoTerminou++;
             continue;
         }
@@ -52,7 +49,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         TOTAL_QUANTUM -= tempoExecucao;
         processoTerminou += tempoExecucao;
 
-        // Atualiza a grid com o tempo de execução do processo
         for (let col = startCol; col < startCol + tempoExecucao; col++) {
             if (!statusGrid[startRow]) {
                 statusGrid[startRow] = [];
@@ -60,7 +56,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             statusGrid[startRow][col] = 'green';
         }
 
-        // Adiciona a sobrecarga, se houver
         if (processoAtual.duracao > 0) {
             for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
                 if (!statusGrid[startRow]) {
@@ -71,7 +66,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             processoTerminou += sobrecarga;
         }
 
-        // Marca o tempo de espera
         for (let col = processoAtual.chegada; col < startCol; col++) {
             if (!statusGrid[startRow]) {
                 statusGrid[startRow] = [];
@@ -81,7 +75,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             }
         }
 
-        // Adiciona o processo atual de volta à fila se ainda estiver com duração
         const proximoProcesso = fila.find(p => p.chegada <= processoTerminou);
         if (processoAtual.duracao > 0 && proximoProcesso) {
             fila.push(processoAtual);
@@ -91,7 +84,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         numColunas = Math.max(numColunas, processoTerminou);
     }
 
-    // Cria os itens da grid para renderizar
     const createGridItems = () => {
         const items = [];
         for (let row = 0; row < NUM_LINHAS; row++) {
@@ -109,7 +101,6 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         return items;
     };
 
-    // Calcula o tempo de turnaround
     const calculateTurnaroundTime = () => {
         let totalTurnaroundTime = 0;
         sortedTabela.forEach(processo => {
