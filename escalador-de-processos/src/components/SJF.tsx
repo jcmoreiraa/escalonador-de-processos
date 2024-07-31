@@ -5,7 +5,7 @@ type Processo = {
     duracao: number;
     deadline?: number;
     codigo: number;
-}
+};
 
 type Props = {
     linhas: number;
@@ -33,7 +33,11 @@ const SJF = ({ linhas, tabela }: Props) => {
         let processoTerminou = 0;
         let numColunas = 0;
 
-        sortedTabela.forEach((processo, index) => {
+        while (sortedTabela.length > 0) {
+            const processo = sortedTabela.shift();
+            if (processo === undefined){
+                continue
+            }
             const startRow = processo.originalIndex;
             const startCol = Math.max(processo.chegada, processoTerminou);
 
@@ -48,32 +52,26 @@ const SJF = ({ linhas, tabela }: Props) => {
 
             for (let col = startCol; col < startCol + processo.duracao; col++) {
                 statusGrid[startRow][col] = 'green';
-                statusGrid[startRow][col] = 'green';
             }
 
             for (let col = processo.chegada; col < startCol; col++) {
                 if (statusGrid[startRow][col] === 'white') {
-                    statusGrid[startRow][col] = 'yellow';
                     statusGrid[startRow][col] = 'yellow';
                 }
             }
 
             processoTerminou = startCol + processo.duracao;
 
-            if (index < sortedTabela.length - 1) {
-                const processosRestantes = sortedTabela.slice(index + 1);
-                processosRestantes.sort((a, b) => {
-                    if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
-                        if (a.duracao === b.duracao) {
-                            return a.codigo - b.codigo;
-                        }
-                        return a.duracao - b.duracao;
+            sortedTabela.sort((a, b) => {
+                if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
+                    if (a.duracao === b.duracao) {
+                        return a.codigo - b.codigo;
                     }
-                    return a.chegada - b.chegada;
-                });
-                sortedTabela = [...sortedTabela.slice(0, index + 1), ...processosRestantes];
-            }
-        });
+                    return a.duracao - b.duracao;
+                }
+                return a.chegada - b.chegada;
+            });
+        }
 
         let lastNonWhiteCol = numColunas - 1;
         for (; lastNonWhiteCol >= 0; lastNonWhiteCol--) {
