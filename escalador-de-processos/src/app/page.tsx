@@ -85,9 +85,9 @@ export default function Home() {
       </div>
       <Coluna />
 
-      {selecionarEscalonamento === 'FIFO' && <FIFO tabela={tabelaProcessos} linhas={tabelaProcessos.length}/>}
+      {selecionarEscalonamento === 'FIFO' && tabelaProcessos.length > 0 && <FIFO tabela={tabelaProcessos} linhas={tabelaProcessos.length}/>}
       {selecionarEscalonamento === 'SJF' && <SJF tabela={tabelaProcessos} linhas={tabelaProcessos.length}/>}
-      {selecionarEscalonamento === 'EDF' && <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)}/>}
+      {selecionarEscalonamento === 'EDF' && Number(quantum)!=0 && <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)}/>}
       {selecionarEscalonamento === 'RR' && <RR tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)}/>}
 
     </main>

@@ -13,11 +13,11 @@ type Props = {
 };
 
 const SJF = ({ linhas, tabela }: Props) => {
-    const NUM_LINHAS = linhas; 
+    const NUM_LINHAS = linhas;
 
     const originalIndex = tabela.map((processo, index) => ({ ...processo, originalIndex: index }));
 
-    const sortedTabela = originalIndex.slice().sort((a, b) => {
+    let sortedTabela = originalIndex.slice().sort((a, b) => {
         if (a.chegada === b.chegada) {
             if (a.duracao === b.duracao) {
                 return a.codigo - b.codigo;
@@ -27,18 +27,16 @@ const SJF = ({ linhas, tabela }: Props) => {
         return a.chegada - b.chegada;
     });
 
-    // Função para criar a grid com base na ordem de chegada e duração dos processos
     const createGridItems = () => {
         const items = [];
         const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []);
         let processoTerminou = 0;
         let numColunas = 0;
 
-        sortedTabela.forEach((processo) => {
-            const startRow = processo.originalIndex; // Usa o índice original
+        sortedTabela.forEach((processo, index) => {
+            const startRow = processo.originalIndex;
             const startCol = Math.max(processo.chegada, processoTerminou);
 
-            // Expande a grid se necessário
             if (startCol + processo.duracao > numColunas) {
                 numColunas = startCol + processo.duracao;
                 for (let i = 0; i < NUM_LINHAS; i++) {
@@ -48,21 +46,33 @@ const SJF = ({ linhas, tabela }: Props) => {
                 }
             }
 
-            // Marcar as células do processo que está em execução
             for (let col = startCol; col < startCol + processo.duracao; col++) {
-                statusGrid[startRow][col] = 'green'; 
+                statusGrid[startRow][col] = 'green';
             }
 
             for (let col = processo.chegada; col < startCol; col++) {
                 if (statusGrid[startRow][col] === 'white') {
-                    statusGrid[startRow][col] = 'yellow'; 
+                    statusGrid[startRow][col] = 'yellow';
                 }
             }
 
             processoTerminou = startCol + processo.duracao;
+
+            if (index < sortedTabela.length - 1) {
+                const processosRestantes = sortedTabela.slice(index + 1);
+                processosRestantes.sort((a, b) => {
+                    if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
+                        if (a.duracao === b.duracao) {
+                            return a.codigo - b.codigo;
+                        }
+                        return a.duracao - b.duracao;
+                    }
+                    return a.chegada - b.chegada;
+                });
+                sortedTabela = [...sortedTabela.slice(0, index + 1), ...processosRestantes];
+            }
         });
 
-        // Remover colunas brancas no final da grid
         let lastNonWhiteCol = numColunas - 1;
         for (; lastNonWhiteCol >= 0; lastNonWhiteCol--) {
             let allWhite = true;
@@ -105,7 +115,7 @@ const SJF = ({ linhas, tabela }: Props) => {
             }
         }
 
-        return nonWhiteCells/linhas;
+        return nonWhiteCells / NUM_LINHAS;
     };
 
     const turnaroundTime = calculateTurnaroundTime();
@@ -115,7 +125,7 @@ const SJF = ({ linhas, tabela }: Props) => {
             <div className="mb-4">
                 <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
                 <ul>
-                    {sortedTabela.map(processo => (
+                    {originalIndex.map(processo => (
                         <li key={processo.codigo} className="mb-2">
                             <span>{`Código: ${processo.codigo}`}</span>
                             <span>{` Chegada: ${processo.chegada}`}</span>

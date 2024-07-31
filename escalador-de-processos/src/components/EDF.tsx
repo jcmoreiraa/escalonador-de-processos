@@ -6,6 +6,10 @@ type Processo = {
     duracao: number;
     deadline: number;
     codigo: number;
+    salvarDuracao?:number;
+    
+    
+
 }
 
 type Props = {
@@ -15,10 +19,13 @@ type Props = {
     sobrecarga: number;
 };
 
+
 const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
+    const salvarDuracao = tabela.map((processo, index) => ({ ...processo, salvarDuracao: processo.duracao }));
 
-    const sortedTabela: Processo[] = tabela.map((processo, index) => ({
+
+    const sortedTabela: Processo[] = salvarDuracao.map((processo, index) => ({
         ...processo,
         originalIndex: index
     })).sort((a, b) => {
@@ -91,7 +98,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 if (!statusGrid[startRow]) {
                     statusGrid[startRow] = [];
                 }
-                if (col >= processoDeadline && statusGrid[startRow][col] != 'red') {
+                if (col > processoDeadline && statusGrid[startRow][col] != 'red') {
                     statusGrid[startRow][col] = 'black' ;
                 } else if (statusGrid[startRow][col] === undefined ) {
                     statusGrid[startRow][col] = 'yellow';
@@ -158,7 +165,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                         <li key={processo.codigo} className="mb-2">
                             <span>{`Código: ${processo.codigo}`}</span>
                             <span>{` Chegada: ${processo.chegada}`}</span>
-                            <span>{` Duração: ${processo.duracao}`}</span>
+                            <span>{` Duração: ${processo.salvarDuracao}`}</span>
                             <span>{` Deadline: ${processo.deadline}`}</span>
                         </li>
                     ))}
