@@ -13,7 +13,7 @@ type Props = {
 };
 
 const SJF = ({ linhas, tabela }: Props) => {
-    const NUM_LINHAS = linhas; 
+    const NUM_LINHAS = linhas;
 
     const originalIndex = tabela.map((processo, index) => ({ ...processo, originalIndex: index }));
 
@@ -50,12 +50,12 @@ const SJF = ({ linhas, tabela }: Props) => {
 
             // Marcar as células do processo que está em execução
             for (let col = startCol; col < startCol + processo.duracao; col++) {
-                statusGrid[startRow][col] = 'green'; 
+                statusGrid[startRow][col] = 'green';
             }
 
             for (let col = processo.chegada; col < startCol; col++) {
                 if (statusGrid[startRow][col] === 'white') {
-                    statusGrid[startRow][col] = 'yellow'; 
+                    statusGrid[startRow][col] = 'yellow';
                 }
             }
 
@@ -105,13 +105,13 @@ const SJF = ({ linhas, tabela }: Props) => {
             }
         }
 
-        return nonWhiteCells/linhas;
+        return nonWhiteCells / linhas;
     };
 
     const turnaroundTime = calculateTurnaroundTime();
 
     return (
-        <div className="flex flex-col items-center bg-gray-100 p-4">
+        <div className="flex flex-col items-center bg-gray-100 p-4 rounded-3xl">
             <div className="mb-4">
                 <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
                 <ul>

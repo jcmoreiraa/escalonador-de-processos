@@ -104,7 +104,7 @@ const FIFO = ({ linhas, tabela }: Props) => {
     const turnaroundTime = calculateTurnaroundTime();
 
     return (
-        <div className="flex flex-col items-center bg-gray-100 p-4">
+        <div className="flex flex-col items-center bg-gray-100 p-4 rounded-3xl">
             <div className="mb-4">
                 <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
                 <ul>

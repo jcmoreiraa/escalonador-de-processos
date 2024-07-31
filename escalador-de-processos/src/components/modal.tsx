@@ -15,40 +15,43 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col justify-center">
       <div className="flex flex-col gap-3">
         <h2>Processo: {numeroDoProcesso}</h2>
-        <div className="flex flex-col gap-px">
-          <label htmlFor="chegada">Chegada</label>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="chegada" className="font-bold">Chegada</label>
           <input
             type="number"
             id="chegada"
-            className="py-2 px-3 rounded-lg"
+            className="py-2 pl-3 pr-2 rounded-lg bg-slate-300"
+            placeholder="0"
             value={chegada}
             onChange={(e) => setChegada(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-px">
-          <label htmlFor="duracao">Duração</label>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="duracao" className="font-bold">Duração</label>
           <input
             type="number"
             id="duracao"
-            className="py-2 px-3 rounded-lg"
+            className="py-2 pl-3 pr-2 rounded-lg bg-slate-300"
+            placeholder="0"
             value={duracao}
             onChange={(e) => setDuracao(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-px">
-          <label htmlFor="deadline">Deadline</label>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="deadline" className="font-bold">Deadline</label>
           <input
             type="number"
             id="deadline"
-            className="py-2 px-3 rounded-lg"
+            className="py-2 pl-3 pr-2 rounded-lg bg-slate-300"
+            placeholder="0"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
         </div>
-        <button onClick={handleClick} className="w-full bg-slate-300 py-2 mt-3 rounded-lg">
+        <button onClick={handleClick} className="w-full py-2 mt-3 rounded-lg text-white bg-slate-600 tracking">
           Criar processo
         </button>
       </div>
