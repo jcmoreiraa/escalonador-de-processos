@@ -13,76 +13,87 @@ type Props = {
     quantum: number;
     sobrecarga: number;
 };
-
 const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
 
+    // Ordena os processos pela chegada
     const sortedTabela: Processo[] = tabela.map((processo, index) => ({
         ...processo,
         originalIndex: index
     })).sort((a, b) => a.chegada - b.chegada);
 
     let TOTAL_QUANTUM = tabela.reduce((acumulador, item) => acumulador + item.duracao, 0);
+    const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []);
+    let processoTerminou = 0;
+    let numColunas = 0;
 
-    const createGridItems = () => {
-        const items = [];
-        const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []);
-        let processoTerminou = 0;
-        let numColunas = 0;
+    let fila: Processo[] = [...sortedTabela];
+    let processoAtual: Processo | undefined = undefined;
 
-        let fila: Processo[] = [...sortedTabela];
-        let processoAtual: Processo | undefined = undefined;
-
-        while (TOTAL_QUANTUM > 0) {
-            if (!processoAtual || processoAtual.duracao <= 0) {
-                processoAtual = fila.shift();
+    while (TOTAL_QUANTUM > 0) {
+        // Se não há processo atual ou o processo atual terminou, busca um novo
+        if (!processoAtual || processoAtual.duracao <= 0) {
+            processoAtual = fila.find(p => p.chegada <= processoTerminou);
+            if (processoAtual) {
+                fila = fila.filter(p => p !== processoAtual);
             }
-
-            if (processoAtual === undefined) {
-                continue;
-            }
-
-            const startRow = processoAtual.originalIndex;
-            const startCol = Math.max(processoAtual.chegada, processoTerminou);
-            const tempoExecucao = Math.min(processoAtual.duracao, quantum);
-            processoAtual.duracao -= tempoExecucao;
-            TOTAL_QUANTUM -= tempoExecucao;
-            processoTerminou += tempoExecucao;
-
-            for (let col = startCol; col < startCol + tempoExecucao; col++) {
-                if (!statusGrid[startRow]) {
-                    statusGrid[startRow] = [];
-                }
-                statusGrid[startRow][col] = 'green';
-            }
-
-            if (processoAtual.duracao > 0) {
-                for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
-                    if (!statusGrid[startRow]) {
-                        statusGrid[startRow] = [];
-                    }
-                    statusGrid[startRow][col] = 'red';
-                }
-                processoTerminou += sobrecarga;
-            }
-
-            for (let col = processoAtual.chegada; col < startCol; col++) {
-                if (!statusGrid[startRow]) {
-                    statusGrid[startRow] = [];
-                }
-                if (statusGrid[startRow][col] === undefined) {
-                    statusGrid[startRow][col] = 'yellow';
-                }
-            }
-
-            if (processoAtual.duracao > 0) {
-                fila.push(processoAtual);
-                processoAtual = undefined;
-            }
-
-            numColunas = Math.max(numColunas, processoTerminou);
         }
 
+        if (processoAtual === undefined) {
+            // Se não há processos prontos, avance o tempo até o próximo processo chegar
+            processoTerminou++;
+            continue;
+        }
+
+        const startRow = processoAtual.originalIndex;
+        const startCol = Math.max(processoAtual.chegada, processoTerminou);
+        const tempoExecucao = Math.min(processoAtual.duracao, quantum);
+        processoAtual.duracao -= tempoExecucao;
+        TOTAL_QUANTUM -= tempoExecucao;
+        processoTerminou += tempoExecucao;
+
+        // Atualiza a grid com o tempo de execução do processo
+        for (let col = startCol; col < startCol + tempoExecucao; col++) {
+            if (!statusGrid[startRow]) {
+                statusGrid[startRow] = [];
+            }
+            statusGrid[startRow][col] = 'green';
+        }
+
+        // Adiciona a sobrecarga, se houver
+        if (processoAtual.duracao > 0) {
+            for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
+                if (!statusGrid[startRow]) {
+                    statusGrid[startRow] = [];
+                }
+                statusGrid[startRow][col] = 'red';
+            }
+            processoTerminou += sobrecarga;
+        }
+
+        // Marca o tempo de espera
+        for (let col = processoAtual.chegada; col < startCol; col++) {
+            if (!statusGrid[startRow]) {
+                statusGrid[startRow] = [];
+            }
+            if (statusGrid[startRow][col] === undefined) {
+                statusGrid[startRow][col] = 'yellow';
+            }
+        }
+
+        // Adiciona o processo atual de volta à fila se ainda estiver com duração
+        const proximoProcesso = fila.find(p => p.chegada <= processoTerminou);
+        if (processoAtual.duracao > 0 && proximoProcesso) {
+            fila.push(processoAtual);
+            processoAtual = undefined;
+        }
+
+        numColunas = Math.max(numColunas, processoTerminou);
+    }
+
+    // Cria os itens da grid para renderizar
+    const createGridItems = () => {
+        const items = [];
         for (let row = 0; row < NUM_LINHAS; row++) {
             for (let col = 0; col < numColunas; col++) {
                 const status = statusGrid[row][col];
@@ -95,24 +106,18 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 );
             }
         }
-
-        return { items, numColunas, statusGrid };
+        return items;
     };
 
-    const { items, numColunas, statusGrid } = createGridItems();
-
+    // Calcula o tempo de turnaround
     const calculateTurnaroundTime = () => {
-        let nonWhiteCells = 0;
-
-        for (let row = 0; row < NUM_LINHAS; row++) {
-            for (let col = 0; col < numColunas; col++) {
-                if (statusGrid[row][col] !== undefined && statusGrid[row][col] !== 'white') {
-                    nonWhiteCells++;
-                }
-            }
-        }
-
-        return nonWhiteCells / linhas;
+        let totalTurnaroundTime = 0;
+        sortedTabela.forEach(processo => {
+            const tempoFinal = statusGrid[processo.originalIndex].length;
+            const tempoChegada = processo.chegada;
+            totalTurnaroundTime += (tempoFinal - tempoChegada);
+        });
+        return totalTurnaroundTime / linhas;
     };
 
     const turnaroundTime = calculateTurnaroundTime();
@@ -139,7 +144,7 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                     gridTemplateRows: `repeat(${NUM_LINHAS}, 1fr)`,
                 }}
             >
-                {items}
+                {createGridItems()}
             </div>
 
             <div className="mt-4">

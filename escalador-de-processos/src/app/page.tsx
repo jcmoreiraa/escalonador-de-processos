@@ -10,15 +10,19 @@ import Image from "next/image";
 import styled from "styled-components";
 import EDF from "@/components/EDF";
 import RR from "@/components/RR";
+import { SheetDemo } from "@/components/sheet";
 
 const TableContainer = styled.div`
   width: 50%;
+  height: 400px; 
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  padding: 10px; 
-  gap:10px;
+  padding: 10px;
+  gap: 10px;
+  overflow-y: auto; 
 `;
+
 
 type Processo = {
   chegada: number;
@@ -28,7 +32,6 @@ type Processo = {
 
 
 }
-
 export default function Home() {
   const [numeroDoProcesso, setNumeroDoProcesso] = useState(1);
   const [chegada, setChegada] = useState("");
@@ -84,13 +87,13 @@ export default function Home() {
             </div>
           ))}
         </TableContainer>
+        <SheetDemo
+          tabelaProcessos={tabelaProcessos}
+          selecionarEscalonamento={selecionarEscalonamento}
+          quantum={Number(quantum)}
+          sobrecarga={Number(sobrecarga)}
+        />
       </div>
-      {/* <Coluna /> */}
-      {selecionarEscalonamento === 'FIFO' && tabelaProcessos.length > 0 && <FIFO tabela={tabelaProcessos} linhas={tabelaProcessos.length} />}
-      {selecionarEscalonamento === 'SJF' && <SJF tabela={tabelaProcessos} linhas={tabelaProcessos.length} />}
-      {selecionarEscalonamento === 'EDF' && Number(quantum)!=0 && <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)} />}
-      {selecionarEscalonamento === 'RR' && <RR tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={Number(quantum)} sobrecarga={Number(sobrecarga)} />}
-
     </main>
   );
 }
