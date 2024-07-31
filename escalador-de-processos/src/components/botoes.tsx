@@ -15,7 +15,7 @@ const Botoes: React.FC<BotoesProps> = ({ selecionarEscalonamento, setSelecionarE
   }
 
   return (
-    <div className='text-black  justify-center flex flex-col gap-3 bg-yellow-200 min-w-[150px] px-4'>
+    <div className='text-black justify-center flex flex-col gap-3 min-w-[150px] h-min'>
       <div className='flex space-x-5 items-center justify-around'>
         <label className='flex items-center space-x-2 rounded-full'>
           <input

@@ -12,37 +12,39 @@ const Quantum = ({ valorQuantum, valorSobrecarga }: Props) => {
     const handleQuantumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setQuantum(newValue);
-        valorQuantum(newValue); 
+        valorQuantum(newValue);
     }
 
     const handleSobrecargaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setSobrecarga(newValue);
-        valorSobrecarga(newValue); 
+        valorSobrecarga(newValue);
     }
 
     return (
-        <div className='flex flex-col gap-5 font-bold text-black'>
-            <label>
-                Quantum:
+        <div className='flex flex-col gap-3 font-bold text-black'>
+            <label className='flex flex-col gap-1'>
+                Quantum
                 <input
                     type='number'
                     min={1}
                     max={99}
+                    placeholder="0"
                     value={quantum}
                     onChange={handleQuantumChange}
-                    className='ml-2 max-w-[40px] pl-1 bg-gray-300 rounded-sm'
+                    className='mt-px py-2 pl-3 pr-2 rounded-lg w-24 bg-slate-300 font-normal'
                 />
             </label>
-            <label>
-                Sobrecarga:
+            <label className='flex flex-col gap-1'>
+                Sobrecarga
                 <input
                     type='number'
                     min={1}
                     max={99}
+                    placeholder="0"
                     value={sobrecarga}
                     onChange={handleSobrecargaChange}
-                    className='ml-2 max-w-[40px] pl-1 bg-gray-300 rounded-sm'
+                    className='mt-px py-2 pl-3 pr-2 rounded-lg w-24 bg-slate-300 font-normal'
                 />
             </label>
         </div>
