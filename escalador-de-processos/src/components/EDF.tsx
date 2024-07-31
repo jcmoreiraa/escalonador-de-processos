@@ -54,16 +54,18 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
             if (!processoAtual || processoAtual.duracao <= 0) {
                 processoAtual = fila.find(p => p.chegada <= processoTerminou);
-                if (!processoAtual) {
+                if (!processoAtual ) {
                     processoTerminou++;
                     continue;
                 }
                 fila = fila.filter(p => p !== processoAtual);
+                
             }
-
+            
+            
             const startRow = processoAtual.originalIndex;
             const startCol = Math.max(processoAtual.chegada, processoTerminou);
-            const processoDeadline = processoAtual.deadline + processoAtual.chegada;
+            const processoDeadline: number = (processoAtual.deadline) + (processoAtual.chegada );
             const tempoExecucao = Math.min(processoAtual.duracao, quantum);
             processoAtual.duracao -= tempoExecucao;
             TOTAL_QUANTUM -= tempoExecucao;
