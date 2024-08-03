@@ -21,11 +21,7 @@ type Processo = {
   deadline: number;
   codigo: number;
   salvarDuracao?: number;
-
-
-
 }
-
 
 type SheetDemoProps = {
   tabelaProcessos: Processo[];
@@ -43,7 +39,12 @@ export function SheetDemo({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="botao" size='sm'>Abrir</Button>
+        {tabelaProcessos.length > 0 ? (
+          <Button variant="botao" size='sm'>Abrir gráfico</Button>
+        ) : (
+          <Button variant="undefined" size='sm'>Abrir gráfico</Button>
+        )
+        }
       </SheetTrigger>
       <SheetContent className="overflow-x-auto">
         <SheetHeader className="ml-4">

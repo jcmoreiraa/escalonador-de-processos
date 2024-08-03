@@ -27,6 +27,7 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
             placeholder="0"
             value={chegada}
             onChange={(e) => setChegada(e.target.value)}
+            min={0}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -38,6 +39,7 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
             placeholder="0"
             value={duracao}
             onChange={(e) => setDuracao(e.target.value)}
+            min={0}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -49,6 +51,7 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
             placeholder="0"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
+            min={0}
           />
         </div>
         <button onClick={handleClick} className="w-full py-2 mt-3 rounded-lg text-white bg-slate-600">

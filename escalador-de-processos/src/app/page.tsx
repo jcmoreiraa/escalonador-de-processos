@@ -11,6 +11,7 @@ import styled from "styled-components";
 import EDF from "@/components/EDF";
 import RR from "@/components/RR";
 import { SheetDemo } from "@/components/sheet";
+import LogoUfba from "@/components/logoufba";
 import Logo from "@/components/logo";
 
 const TableContainer = styled.div`
@@ -64,7 +65,10 @@ export default function Home() {
 
   return (
     <main className="flex flex-col align-center justify-center bg-white px-24 py-8 gap-10">
-      <Logo />
+      <div className="w-full flex flex-row items-center justify-between">
+        <Logo></Logo>
+        <LogoUfba />
+      </div>
       <div className="flex flex-row justify-between bg-slate-100 min-h-36 gap-y-44 p-5 rounded-3xl drop-shadow-2xl">
         <div className="flex flex-col justify-between px-5 py-5 gap-10">
           <Botoes selecionarEscalonamento={selecionarEscalonamento} setSelecionarEscalonamento={setSelecionarEscalonamento} />
