@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type Processo = {
     [x: string]: any;
@@ -54,18 +54,18 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
             if (!processoAtual || processoAtual.duracao <= 0) {
                 processoAtual = fila.find(p => p.chegada <= processoTerminou);
-                if (!processoAtual ) {
+                if (!processoAtual) {
                     processoTerminou++;
                     continue;
                 }
                 fila = fila.filter(p => p !== processoAtual);
-                
+
             }
-            
-            
+
+
             const startRow = processoAtual.originalIndex;
             const startCol = Math.max(processoAtual.chegada, processoTerminou);
-            const processoDeadline: number = (processoAtual.deadline) + (processoAtual.chegada );
+            const processoDeadline: number = (processoAtual.deadline) + (processoAtual.chegada);
             const tempoExecucao = Math.min(processoAtual.duracao, quantum);
             processoAtual.duracao -= tempoExecucao;
             TOTAL_QUANTUM -= tempoExecucao;
@@ -126,7 +126,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 items.push(
                     <div
                         key={`${row}-${col}`}
-                        className={`flex items-center justify-center border border-black w-8 h-8 rounded-md ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-500' : (status === 'red' ? 'bg-red-500' : (status === 'black' ? 'bg-black' : 'bg-white')))}`}
+                        className={`flex items-center justify-center border border-black border-opacity-40 w-10 h-10 ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-500' : (status === 'red' ? 'bg-red-500' : (status === 'black' ? 'bg-black' : 'bg-white')))}`}
                     >
                     </div>
                 );
@@ -154,24 +154,35 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
     const turnaroundTime = calculateTurnaroundTime();
 
+    const [isDetailVisible, setIsDetailVisible] = useState(false);
+
+    function handleDetailVisibility() {
+        setIsDetailVisible(!isDetailVisible);
+    }
+
     return (
         <div className="flex flex-col items-center bg-gray-100 p-4 rounded-3xl">
-            <div className="mb-4">
-                <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
-                <ul>
-                    {sortedTabela.map(processo => (
-                        <li key={processo.codigo} className="mb-2">
-                            <span>{`Código: ${processo.codigo}`}</span>
-                            <span>{` Chegada: ${processo.chegada}`}</span>
-                            <span>{` Duração: ${processo.salvarDuracao}`}</span>
-                            <span>{` Deadline: ${processo.deadline}`}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <button onClick={handleDetailVisibility} className='text-blue-800 font-semibold py-1 px-3 mb-4 rounded-lg'>{isDetailVisible ? "Esconder detalhes" : "Mostrar detalhes"}</button>
+            {isDetailVisible ? (
+                <div className="mb-4 -mt-2">
+                    <h3 className="text-lg font-extrabold mb-2">Tabela de Processos Ordenada:</h3>
+                    <ul>
+                        {sortedTabela.map(processo => (
+                            <li key={processo.codigo} className="flex gap-3 mb-2">
+                                <span>{`Código: ${processo.codigo}`}</span>
+                                <span>{` Chegada: ${processo.chegada}`}</span>
+                                <span>{` Duração: ${processo.salvarDuracao}`}</span>
+                                <span>{` Deadline: ${processo.deadline}`}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ) : (
+                ""
+            )}
 
             <div
-                className="grid gap-4"
+                className="grid gap-0"
                 style={{
                     gridTemplateColumns: `repeat(${numColunas}, 1fr)`,
                     gridTemplateRows: `repeat(${NUM_LINHAS}, 1fr)`,
@@ -181,8 +192,8 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             </div>
 
             <div className="mt-4">
-                <h4 className="text-lg font-bold">Turnaround:</h4>
-                <p>{turnaroundTime}</p>
+                <h4 className="text-lg font-extrabold">Turnaround:</h4>
+                <p>{turnaroundTime.toFixed(2)}</p>
             </div>
         </div>
     );

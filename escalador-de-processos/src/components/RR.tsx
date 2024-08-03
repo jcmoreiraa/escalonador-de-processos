@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type Processo = {
     [x: string]: any;
@@ -15,8 +15,9 @@ type Props = {
 };
 const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
+    const salvarDuracao = tabela.map((processo, index) => ({ ...processo, salvarDuracao: processo.duracao }));
 
-    const sortedTabela: Processo[] = tabela.map((processo, index) => ({
+    const sortedTabela: Processo[] = salvarDuracao.map((processo, index) => ({
         ...processo,
         originalIndex: index
     })).sort((a, b) => a.chegada - b.chegada);
@@ -92,7 +93,7 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 items.push(
                     <div
                         key={`${row}-${col}`}
-                        className={`flex items-center justify-center border border-black w-8 h-8 rounded-md ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-500' : (status === 'red' ? 'bg-red-500' : 'bg-white'))}`}
+                        className={`flex items-center justify-center border border-black border-opacity-40 w-10 h-10 ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-500' : (status === 'red' ? 'bg-red-500' : 'bg-white'))}`}
                     >
                     </div>
                 );
@@ -102,34 +103,49 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     };
 
     const calculateTurnaroundTime = () => {
-        let totalTurnaroundTime = 0;
-        sortedTabela.forEach(processo => {
-            const tempoFinal = statusGrid[processo.originalIndex].length;
-            const tempoChegada = processo.chegada;
-            totalTurnaroundTime += (tempoFinal - tempoChegada);
-        });
-        return totalTurnaroundTime / linhas;
+        let nonWhiteCells = 0;
+
+        for (let row = 0; row < NUM_LINHAS; row++) {
+            for (let col = 0; col < numColunas; col++) {
+                if (statusGrid[row][col] !== undefined && statusGrid[row][col] !== 'white') {
+                    nonWhiteCells++;
+                }
+            }
+        }
+
+        return nonWhiteCells / linhas;
     };
 
     const turnaroundTime = calculateTurnaroundTime();
 
+    const [isDetailVisible, setIsDetailVisible] = useState(false);
+
+    function handleDetailVisibility() {
+        setIsDetailVisible(!isDetailVisible);
+    }
+
     return (
         <div className="flex flex-col items-center bg-gray-100 p-4 rounded-3xl">
-            <div className="mb-4">
-                <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
-                <ul>
-                    {sortedTabela.map(processo => (
-                        <li key={processo.codigo} className="mb-2">
-                            <span>{`Código: ${processo.codigo}`}</span>
-                            <span>{` Chegada: ${processo.chegada}`}</span>
-                            <span>{` Duração: ${processo.duracao}`}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <button onClick={handleDetailVisibility} className='text-blue-800 font-semibold py-1 px-3 mb-4 rounded-lg'>{isDetailVisible ? "Esconder detalhes" : "Mostrar detalhes"}</button>
+            {isDetailVisible ? (
+                <div className="mb-4 -mt-2">
+                    <h3 className="text-lg font-extrabold mb-2">Tabela de Processos Ordenada:</h3>
+                    <ul>
+                        {sortedTabela.map(processo => (
+                            <li key={processo.codigo} className="flex gap-3 mb-2">
+                                <span>{`Código: ${processo.codigo}`}</span>
+                                <span>{` Chegada: ${processo.chegada}`}</span>
+                                <span>{` Duração: ${processo.salvarDuracao}`}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ) : (
+                ""
+            )}
 
             <div
-                className="grid gap-4"
+                className="grid gap-0"
                 style={{
                     gridTemplateColumns: `repeat(${numColunas}, 1fr)`,
                     gridTemplateRows: `repeat(${NUM_LINHAS}, 1fr)`,
@@ -139,8 +155,8 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             </div>
 
             <div className="mt-4">
-                <h4 className="text-lg font-bold">Turnaround:</h4>
-                <p>{turnaroundTime}</p>
+                <h4 className="text-lg font-extrabold">Turnaround:</h4>
+                <p>{turnaroundTime.toFixed(2)}</p>
             </div>
         </div>
     );

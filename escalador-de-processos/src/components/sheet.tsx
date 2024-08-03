@@ -15,14 +15,14 @@ import EDF from "@/components/EDF";
 import RR from "@/components/RR";
 
 type Processo = {
-    [x: string]: any;
-    chegada: number;
-    duracao: number;
-    deadline: number;
-    codigo: number;
-    salvarDuracao?:number;
-    
-    
+  [x: string]: any;
+  chegada: number;
+  duracao: number;
+  deadline: number;
+  codigo: number;
+  salvarDuracao?: number;
+
+
 
 }
 
@@ -43,26 +43,26 @@ export function SheetDemo({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size='sm'>Open</Button>
+        <Button variant="botao" size='sm'>Abrir</Button>
       </SheetTrigger>
       <SheetContent className="overflow-x-auto">
-        <SheetHeader>
-          <SheetTitle>Escalonamento</SheetTitle>
-          <SheetDescription>
+        <SheetHeader className="ml-4">
+          <SheetTitle className="text-3xl font-bold mt-4">Escalonamento</SheetTitle>
+          <SheetDescription className="text-base">
             Visualize as tabelas de escalonamento abaixo.
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">
           {selecionarEscalonamento === 'FIFO' && tabelaProcessos.length > 0 && <FIFO tabela={tabelaProcessos} linhas={tabelaProcessos.length} />}
           {selecionarEscalonamento === 'SJF' && tabelaProcessos.length > 0 && <SJF tabela={tabelaProcessos} linhas={tabelaProcessos.length} />}
-          {selecionarEscalonamento === 'EDF' && tabelaProcessos.length > 0 && quantum>0 &&  <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={quantum} sobrecarga={sobrecarga} />}
-          {selecionarEscalonamento === 'RR'  && tabelaProcessos.length > 0 &&  quantum>0 && <RR tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={quantum} sobrecarga={sobrecarga} />}
+          {selecionarEscalonamento === 'EDF' && tabelaProcessos.length > 0 && quantum > 0 && <EDF tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={quantum} sobrecarga={sobrecarga} />}
+          {selecionarEscalonamento === 'RR' && tabelaProcessos.length > 0 && quantum > 0 && <RR tabela={tabelaProcessos} linhas={tabelaProcessos.length} quantum={quantum} sobrecarga={sobrecarga} />}
         </div>
-        <SheetFooter>
+        {/* <SheetFooter>
           <SheetClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button variant="botao">Close</Button>
           </SheetClose>
-        </SheetFooter>
+        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   );

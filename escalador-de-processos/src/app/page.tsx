@@ -11,6 +11,7 @@ import styled from "styled-components";
 import EDF from "@/components/EDF";
 import RR from "@/components/RR";
 import { SheetDemo } from "@/components/sheet";
+import Logo from "@/components/logo";
 
 const TableContainer = styled.div`
   width: 50%;
@@ -62,36 +63,38 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col align-center justify-center bg-white p-24 gap-10">
-      <div className="flex flex-row justify-between bg-slate-100 min-h-36 gap-y-44 p-5 rounded-3xl">
-        <div className="flex flex-col justify-between px-5 py-16 gap-10">
+    <main className="flex flex-col align-center justify-center bg-white px-24 py-8 gap-10">
+      <Logo />
+      <div className="flex flex-row justify-between bg-slate-100 min-h-36 gap-y-44 p-5 rounded-3xl drop-shadow-2xl">
+        <div className="flex flex-col justify-between px-5 py-5 gap-10">
           <Botoes selecionarEscalonamento={selecionarEscalonamento} setSelecionarEscalonamento={setSelecionarEscalonamento} />
           <Quantum valorQuantum={setQuantum} valorSobrecarga={setSobrecarga} />
+          <SheetDemo
+            tabelaProcessos={tabelaProcessos}
+            selecionarEscalonamento={selecionarEscalonamento}
+            quantum={Number(quantum)}
+            sobrecarga={Number(sobrecarga)}
+          />
         </div>
         <Modal numeroDoProcesso={numeroDoProcesso} onClick={handleCreateProcess} />
-        <TableContainer>
+        <TableContainer className="bg-slate-200 ">
           {tabelaProcessos.map((processo) => (
             <div key={processo.codigo} className="flex justify-between items-center p-2 border-b">
-              <span>{`Processo:  ${processo.codigo}`}</span>
-              <p> {`Chegada:  ${processo.chegada}`} </p>
-              <p> {`Duração:  ${processo.duracao}`}
-                <p> {`DeadLine:  ${processo.deadline ? processo.deadline : 0}`}  </p>
-              </p>
+              <span className="font-bold">{`Processo:  ${processo.codigo}`}</span>
+              <p className="font-bold"> {`Chegada:  ${processo.chegada}`} </p>
+              <p className="font-bold"> {`Duração:  ${processo.duracao}`} </p>
+              <p className="font-bold"> {`Deadline:  ${processo.deadline ? processo.deadline : 0}`}  </p>
+
               <button
                 onClick={() => excluirProcesso(processo.codigo)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                className="bg-slate-700 text-white px-2 py-1 rounded"
               >
                 Excluir
               </button>
             </div>
           ))}
         </TableContainer>
-        <SheetDemo
-          tabelaProcessos={tabelaProcessos}
-          selecionarEscalonamento={selecionarEscalonamento}
-          quantum={Number(quantum)}
-          sobrecarga={Number(sobrecarga)}
-        />
+
       </div>
     </main>
   );

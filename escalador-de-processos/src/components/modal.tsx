@@ -17,7 +17,7 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
   return (
     <div className="flex flex-col justify-center">
       <div className="flex flex-col gap-3">
-        <h2>Processo: {numeroDoProcesso}</h2>
+        <h2 className="font-bold"> Processo: {numeroDoProcesso}</h2>
         <div className="flex flex-col gap-1">
           <label htmlFor="chegada" className="font-bold">Chegada</label>
           <input
@@ -51,7 +51,7 @@ const Modal = ({ numeroDoProcesso, onClick: criarProcesso }: Props) => {
             onChange={(e) => setDeadline(e.target.value)}
           />
         </div>
-        <button onClick={handleClick} className="w-full py-2 mt-3 rounded-lg text-white bg-slate-600 tracking">
+        <button onClick={handleClick} className="w-full py-2 mt-3 rounded-lg text-white bg-slate-600">
           Criar processo
         </button>
       </div>

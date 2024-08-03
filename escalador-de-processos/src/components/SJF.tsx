@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type Processo = {
     chegada: number;
@@ -35,7 +35,7 @@ const SJF = ({ linhas, tabela }: Props) => {
 
         while (sortedTabela.length > 0) {
             const processo = sortedTabela.shift();
-            if (processo === undefined){
+            if (processo === undefined) {
                 continue
             }
             const startRow = processo.originalIndex;
@@ -92,7 +92,7 @@ const SJF = ({ linhas, tabela }: Props) => {
                 items.push(
                     <div
                         key={`${row}-${col}`}
-                        className={`flex items-center justify-center border border-black w-8 h-8 rounded-md ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-500' : 'bg-white')}`}
+                        className={`flex items-center justify-center border border-black border-opacity-40 w-10 h-10 ${status === 'green' ? 'bg-green-500' : (status === 'yellow' ? 'bg-yellow-400' : 'bg-white')}`}
                     >
                     </div>
                 );
@@ -120,24 +120,34 @@ const SJF = ({ linhas, tabela }: Props) => {
 
     const turnaroundTime = calculateTurnaroundTime();
 
+    const [isDetailVisible, setIsDetailVisible] = useState(false);
+
+    function handleDetailVisibility() {
+        setIsDetailVisible(!isDetailVisible);
+    }
+
     return (
         <div className="flex flex-col items-center bg-gray-100 p-4 rounded-3xl">
-            <div className="mb-4">
-                <h3 className="text-lg font-bold">Tabela de Processos Ordenada:</h3>
-                <ul>
-                    {originalIndex.map(processo => (
-                        <li key={processo.codigo} className="mb-2">
-                            <span>{`Código: ${processo.codigo}`}</span>
-                            <span>{` Chegada: ${processo.chegada}`}</span>
-                            <span>{` Duração: ${processo.duracao}`}</span>
-                            <span>{` Deadline: ${processo.deadline ?? 'Não definido'}`}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <button onClick={handleDetailVisibility} className='text-blue-800 font-semibold py-1 px-3 mb-4 rounded-lg'>{isDetailVisible ? "Esconder detalhes" : "Mostrar detalhes"}</button>
+            {isDetailVisible ? (
+                <div className="mb-4 -mt-2">
+                    <h3 className="text-lg font-extrabold mt-2 mb-2">Tabela de Processos Ordenada:</h3>
+                    <ul className=''>
+                        {originalIndex.map(processo => (
+                            <li key={processo.codigo} className="flex gap-3 mb-2">
+                                <span>{`Código: ${processo.codigo}`}</span>
+                                <span>{` Chegada: ${processo.chegada}`}</span>
+                                <span>{` Duração: ${processo.duracao}`}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ) : (
+                ""
+            )}
 
             <div
-                className="grid gap-4"
+                className="grid gap-0"
                 style={{
                     gridTemplateColumns: `repeat(${numColunas}, 1fr)`,
                     gridTemplateRows: `repeat(${NUM_LINHAS}, 1fr)`,
@@ -146,9 +156,9 @@ const SJF = ({ linhas, tabela }: Props) => {
                 {items}
             </div>
 
-            <div className="mt-4">
-                <h4 className="text-lg font-bold">Turnaround:</h4>
-                <p>{turnaroundTime}</p>
+            <div className="mt-8">
+                <h4 className="text-lg font-extrabold">Turnaround:</h4>
+                <p>{turnaroundTime.toFixed(2)}</p>
             </div>
         </div>
     );
