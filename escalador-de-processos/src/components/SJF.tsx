@@ -5,7 +5,8 @@ type Processo = {
     duracao: number;
     deadline?: number;
     codigo: number;
-};
+    originalIndex?: number;
+}
 
 type Props = {
     linhas: number;
@@ -37,30 +38,21 @@ const SJF = ({ linhas, tabela }: Props) => {
             const processo = sortedTabela.shift();
             if (processo === undefined) {
                 continue
+                
             }
-            const startRow = processo.originalIndex;
+            const startRow = processo.originalIndex!;
             const startCol = Math.max(processo.chegada, processoTerminou);
-
-            if (startCol + processo.duracao > numColunas) {
-                numColunas = startCol + processo.duracao;
-                for (let i = 0; i < NUM_LINHAS; i++) {
-                    while (statusGrid[i].length < numColunas) {
-                        statusGrid[i].push('white');
-                    }
-                }
-            }
 
             for (let col = startCol; col < startCol + processo.duracao; col++) {
                 statusGrid[startRow][col] = 'green';
             }
 
             for (let col = processo.chegada; col < startCol; col++) {
-                if (statusGrid[startRow][col] === 'white') {
-                    statusGrid[startRow][col] = 'yellow';
-                }
+                statusGrid[startRow][col] = 'yellow';
             }
 
             processoTerminou = startCol + processo.duracao;
+            numColunas = Math.max(numColunas, processoTerminou);
 
             sortedTabela.sort((a, b) => {
                 if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
@@ -72,19 +64,6 @@ const SJF = ({ linhas, tabela }: Props) => {
                 return a.chegada - b.chegada;
             });
         }
-
-        let lastNonWhiteCol = numColunas - 1;
-        for (; lastNonWhiteCol >= 0; lastNonWhiteCol--) {
-            let allWhite = true;
-            for (let row = 0; row < NUM_LINHAS; row++) {
-                if (statusGrid[row][lastNonWhiteCol] !== 'white') {
-                    allWhite = false;
-                    break;
-                }
-            }
-            if (!allWhite) break;
-        }
-        numColunas = lastNonWhiteCol + 1;
 
         for (let row = 0; row < NUM_LINHAS; row++) {
             for (let col = 0; col < numColunas; col++) {
@@ -109,7 +88,7 @@ const SJF = ({ linhas, tabela }: Props) => {
 
         for (let row = 0; row < NUM_LINHAS; row++) {
             for (let col = 0; col < numColunas; col++) {
-                if (statusGrid[row][col] !== 'white') {
+                if (statusGrid[row][col] !== undefined ) {
                     nonWhiteCells++;
                 }
             }

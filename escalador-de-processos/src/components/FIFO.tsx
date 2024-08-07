@@ -5,6 +5,7 @@ type Processo = {
     duracao: number;
     deadline?: number;
     codigo: number;
+    originalIndex?: number;
 }
 
 type Props = {
@@ -15,9 +16,9 @@ type Props = {
 const FIFO = ({ linhas, tabela }: Props) => {
     const NUM_LINHAS = linhas;
 
-    const originalIndex = tabela.map((processo, index) => ({ ...processo, originalIndex: index }));
+    const originalIndex = tabela.map((processo, index) => ({ ...processo, originalIndex: index })); //refaz toda a tabela mas agora com um parametro novo chamado OriginalIndex, com os valores do INDEX salvos, pra gente saber a linha de cada processo
 
-    const sortedTabela = originalIndex.slice().sort((a, b) => {
+    const sortedTabela = originalIndex.slice().sort((a, b) => { //algoritmo de sort que ordena eles por ordem de chegada, se a chegada for igual, a diferença vem do código (numero que o processo foi criado)
         if (a.chegada === b.chegada) {
             return a.codigo - b.codigo;
         }
@@ -25,49 +26,26 @@ const FIFO = ({ linhas, tabela }: Props) => {
     });
 
     const createGridItems = () => {
-        const items = [];
-        const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []);
-        let processoTerminou = 0;
-        let numColunas = 0;
+        const items = []; // declara a matriz 
+        const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []); //declara um array com o tamanho da quantidade de linhas com valores NULL, depois preenche cada array com um []
+        let processoTerminou = 0; //indica onde o processo vai começar, serve pra guardar onde o ultimo processo terminou 
+        let numColunas = 0; // inicia como zero e é aumentada conforme as iterações
 
         sortedTabela.forEach((processo) => {
-            const startRow = processo.originalIndex; 
-            const startCol = Math.max(processo.chegada, processoTerminou);
+            const startRow = processo.originalIndex; // diz em qual linha ele deve executar
+            const startCol = Math.max(processo.chegada, processoTerminou); // o max serve pra mostrar onde ele vai começar, pra obrigar ele a iniciar por onde o ultimo terminou
 
-            if (startCol + processo.duracao > numColunas) {
-                numColunas = startCol + processo.duracao;
-                for (let i = 0; i < NUM_LINHAS; i++) {
-                    while (statusGrid[i].length < numColunas) {
-                        statusGrid[i].push('white');
-                    }
-                }
-            }
-
-            for (let col = startCol; col < startCol + processo.duracao; col++) {
-                statusGrid[startRow][col] = 'green'; 
+            for (let col = startCol; col < startCol + processo.duracao; col++) { 
+                statusGrid[startRow][col] = 'green'; // dá o atributo de verde de onde ele começou até a duração acabar
             }
 
             for (let col = processo.chegada; col < startCol; col++) {
-                if (statusGrid[startRow][col] === 'white') {
-                    statusGrid[startRow][col] = 'yellow'; 
-                }
+                    statusGrid[startRow][col] = 'yellow'; // dá o amarelo de onde ele chegou até onde ele começou a executar/o ultimo terminou
             }
 
-            processoTerminou = startCol + processo.duracao;
+            processoTerminou = startCol + processo.duracao; //atualiza a posição onde ele terminou
+            numColunas = Math.max(numColunas, processoTerminou); //força o numero de colunas a acompanhar o número de execuções
         });
-
-        let lastNonWhiteCol = numColunas - 1;
-        for (; lastNonWhiteCol >= 0; lastNonWhiteCol--) {
-            let allWhite = true;
-            for (let row = 0; row < NUM_LINHAS; row++) {
-                if (statusGrid[row][lastNonWhiteCol] !== 'white') {
-                    allWhite = false;
-                    break;
-                }
-            }
-            if (!allWhite) break;
-        }
-        numColunas = lastNonWhiteCol + 1;
 
         for (let row = 0; row < NUM_LINHAS; row++) {
             for (let col = 0; col < numColunas; col++) {
@@ -82,7 +60,7 @@ const FIFO = ({ linhas, tabela }: Props) => {
             }
         }
 
-        return { items, numColunas, statusGrid };
+        return { items, numColunas, statusGrid }; //cria a matriz com todas as caracteristicas que foram feitas durante o loop
     };
 
     const { items, numColunas, statusGrid } = createGridItems();
@@ -92,13 +70,13 @@ const FIFO = ({ linhas, tabela }: Props) => {
 
         for (let row = 0; row < NUM_LINHAS; row++) {
             for (let col = 0; col < numColunas; col++) {
-                if (statusGrid[row][col] !== 'white') {
+                if (statusGrid[row][col] !== undefined ) {
                     nonWhiteCells++;
                 }
             }
         }
 
-        return nonWhiteCells/linhas;
+        return nonWhiteCells / linhas;
     };
 
     const turnaroundTime = calculateTurnaroundTime();
@@ -134,7 +112,8 @@ const FIFO = ({ linhas, tabela }: Props) => {
                 style={{
                     gridTemplateColumns: `repeat(${numColunas}, 1fr)`,
                     gridTemplateRows: `repeat(${NUM_LINHAS}, 1fr)`,
-                }}
+                }
+            }
             >
                 {items}
             </div>

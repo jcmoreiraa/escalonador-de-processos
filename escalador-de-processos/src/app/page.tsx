@@ -15,7 +15,7 @@ import LogoUfba from "@/components/logoufba";
 import Logo from "@/components/logo";
 
 const TableContainer = styled.div`
-  width: 50%;
+  width:50%;
   height: 400px; 
   border: 1px solid #ddd;
   border-radius: 8px;

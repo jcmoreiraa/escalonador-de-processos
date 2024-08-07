@@ -5,6 +5,8 @@ type Processo = {
     chegada: number;
     duracao: number;
     codigo: number;
+    originalIndex: number;
+    salvarDuracao: number;
 };
 
 type Props = {
@@ -13,6 +15,7 @@ type Props = {
     quantum: number;
     sobrecarga: number;
 };
+
 const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
     const salvarDuracao = tabela.map((processo, index) => ({ ...processo, salvarDuracao: processo.duracao }));
@@ -24,21 +27,22 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
     let TOTAL_QUANTUM = tabela.reduce((acumulador, item) => acumulador + item.duracao, 0);
     const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []);
+    console.log(statusGrid)
     let processoTerminou = 0;
     let numColunas = 0;
 
     let fila: Processo[] = [...sortedTabela];
-    let processoAtual: Processo | undefined = undefined;
+    let processoAtual: Processo | null = null;
 
     while (TOTAL_QUANTUM > 0) {
         if (!processoAtual || processoAtual.duracao <= 0) {
-            processoAtual = fila.find(p => p.chegada <= processoTerminou);
+            processoAtual = fila.find(p => p.chegada <= processoTerminou) || null;
             if (processoAtual) {
                 fila = fila.filter(p => p !== processoAtual);
             }
         }
 
-        if (processoAtual === undefined) {
+        if (processoAtual === null) {
             processoTerminou++;
             continue;
         }
@@ -71,7 +75,7 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             if (!statusGrid[startRow]) {
                 statusGrid[startRow] = [];
             }
-            if (statusGrid[startRow][col] === undefined) {
+            else if (statusGrid[startRow][col] !='green' && statusGrid[startRow][col] !='red' && statusGrid[startRow][col] !='black'){
                 statusGrid[startRow][col] = 'yellow';
             }
         }
@@ -79,7 +83,7 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         const proximoProcesso = fila.find(p => p.chegada <= processoTerminou);
         if (processoAtual.duracao > 0 && proximoProcesso) {
             fila.push(processoAtual);
-            processoAtual = undefined;
+            processoAtual = null;
         }
 
         numColunas = Math.max(numColunas, processoTerminou);

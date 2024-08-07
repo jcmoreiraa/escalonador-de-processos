@@ -42,9 +42,10 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         let numColunas = 0;
 
         let fila: Processo[] = [...sortedTabela];
-        let processoAtual: Processo | undefined = undefined;
+        let processoAtual: Processo | null = null;
 
         while (TOTAL_QUANTUM > 0) {
+            console.log(processoAtual)
             fila = fila.sort((a, b) => {
                 if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
                     return a.deadline - b.deadline;
@@ -53,7 +54,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             });
 
             if (!processoAtual || processoAtual.duracao <= 0) {
-                processoAtual = fila.find(p => p.chegada <= processoTerminou);
+                processoAtual = fila.find(p => p.chegada <= processoTerminou) || null;
                 if (!processoAtual) {
                     processoTerminou++;
                     continue;
@@ -72,9 +73,6 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             processoTerminou += tempoExecucao;
 
             for (let col = startCol; col < startCol + tempoExecucao; col++) {
-                if (!statusGrid[startRow]) {
-                    statusGrid[startRow] = [];
-                }
                 if (col < processoDeadline) {
                     statusGrid[startRow][col] = 'green';
                 } else {
@@ -84,21 +82,15 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
             if (processoAtual.duracao > 0) {
                 for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
-                    if (!statusGrid[startRow]) {
-                        statusGrid[startRow] = [];
-                    }
                     statusGrid[startRow][col] = 'red';
                 }
                 processoTerminou += sobrecarga;
             }
 
             for (let col = processoAtual.chegada; col < startCol; col++) {
-                if (!statusGrid[startRow]) {
-                    statusGrid[startRow] = [];
-                }
                 if (col > processoDeadline && statusGrid[startRow][col] != 'red') {
                     statusGrid[startRow][col] = 'black';
-                } else if (statusGrid[startRow][col] === undefined) {
+                } else if (statusGrid[startRow][col] !='green' && statusGrid[startRow][col] !='red' && statusGrid[startRow][col] !='black') {
                     statusGrid[startRow][col] = 'yellow';
                 }
             }
@@ -109,12 +101,11 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
             });
 
             if (proximoProcesso && processoAtual.duracao > 0) {
-                fila.unshift(processoAtual);
+                fila.push(processoAtual);
                 processoAtual = proximoProcesso;
-                fila = fila.filter(p => p !== proximoProcesso);
+                
             } else if (processoAtual.duracao > 0) {
                 fila.unshift(processoAtual);
-                processoAtual = undefined;
             }
 
             numColunas = Math.max(numColunas, processoTerminou);
