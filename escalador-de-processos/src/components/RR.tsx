@@ -5,8 +5,7 @@ type Processo = {
     chegada: number;
     duracao: number;
     codigo: number;
-    originalIndex: number;
-    salvarDuracao: number;
+    salvarDuracao?: number;
 };
 
 type Props = {
@@ -82,7 +81,11 @@ const RR = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
         const proximoProcesso = fila.find(p => p.chegada <= processoTerminou);
         if (processoAtual.duracao > 0 && proximoProcesso) {
-            fila.push(processoAtual);
+            
+                fila.push(processoAtual)
+
+            
+            
             processoAtual = null;
         }
 

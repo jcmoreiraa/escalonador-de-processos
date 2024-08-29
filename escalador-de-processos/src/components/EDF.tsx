@@ -6,7 +6,6 @@ type Processo = {
     duracao: number;
     deadline: number;
     codigo: number;
-    salvarDuracao?: number;
 };
 
 type Props = {
@@ -18,17 +17,26 @@ type Props = {
 
 const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
     const NUM_LINHAS = linhas;
-    const salvarDuracao = tabela.map((processo, index) => ({ ...processo, salvarDuracao: processo.duracao }));
+
+    const tabelaDeadline = tabela.map(processo => ({
+        ...processo,
+        processoDeadline: processo.chegada + processo.deadline
+    }));
+
+    const salvarDuracao = tabelaDeadline.map(processo => ({
+        ...processo,
+        salvarDuracao: processo.duracao
+    }));
 
     const sortedTabela: Processo[] = salvarDuracao.map((processo, index) => ({
         ...processo,
         originalIndex: index
     })).sort((a, b) => {
         if (a.chegada === b.chegada) {
-            if (a.deadline === b.deadline) {
+            if (a.processoDeadline === b.processoDeadline) {
                 return a.codigo - b.codigo;
             }
-            return a.deadline - b.deadline;
+            return a.processoDeadline - b.processoDeadline;
         }
         return a.chegada - b.chegada;
     });
@@ -45,10 +53,9 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
         let processoAtual: Processo | null = null;
 
         while (TOTAL_QUANTUM > 0) {
-            console.log(processoAtual)
             fila = fila.sort((a, b) => {
                 if (a.chegada <= processoTerminou && b.chegada <= processoTerminou) {
-                    return a.deadline - b.deadline;
+                    return a.processoDeadline - b.processoDeadline
                 }
                 return a.chegada - b.chegada;
             });
@@ -60,55 +67,55 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                     continue;
                 }
                 fila = fila.filter(p => p !== processoAtual);
-
             }
 
+            if (processoAtual) {
+                const startRow = processoAtual.originalIndex;
+                const startCol = Math.max(processoAtual.chegada, processoTerminou);
+                const processoDeadline = processoAtual.processoDeadline!;
+                const tempoExecucao = Math.min(processoAtual.duracao, quantum);
+                processoAtual.duracao -= tempoExecucao;
+                TOTAL_QUANTUM -= tempoExecucao;
+                processoTerminou += tempoExecucao;
 
-            const startRow = processoAtual.originalIndex;
-            const startCol = Math.max(processoAtual.chegada, processoTerminou);
-            const processoDeadline: number = (processoAtual.deadline) + (processoAtual.chegada);
-            const tempoExecucao = Math.min(processoAtual.duracao, quantum);
-            processoAtual.duracao -= tempoExecucao;
-            TOTAL_QUANTUM -= tempoExecucao;
-            processoTerminou += tempoExecucao;
-
-            for (let col = startCol; col < startCol + tempoExecucao; col++) {
-                if (col < processoDeadline) {
-                    statusGrid[startRow][col] = 'green';
-                } else {
-                    statusGrid[startRow][col] = 'black';
+                for (let col = startCol; col < startCol + tempoExecucao; col++) {
+                    if (col < processoDeadline) {
+                        statusGrid[startRow][col] = 'green';
+                    } else {
+                        statusGrid[startRow][col] = 'black';
+                    }
                 }
-            }
 
-            if (processoAtual.duracao > 0) {
-                for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
-                    statusGrid[startRow][col] = 'red';
+                if (processoAtual.duracao > 0) {
+                    for (let col = processoTerminou; col < processoTerminou + sobrecarga; col++) {
+                        statusGrid[startRow][col] = 'red';
+                    }
+                    processoTerminou += sobrecarga;
                 }
-                processoTerminou += sobrecarga;
-            }
 
-            for (let col = processoAtual.chegada; col < startCol; col++) {
-                if (col > processoDeadline && statusGrid[startRow][col] != 'red') {
-                    statusGrid[startRow][col] = 'black';
-                } else if (statusGrid[startRow][col] !='green' && statusGrid[startRow][col] !='red' && statusGrid[startRow][col] !='black') {
-                    statusGrid[startRow][col] = 'yellow';
+                for (let col = processoAtual.chegada; col < startCol; col++) {
+                    if (col > processoDeadline && statusGrid[startRow][col] !== 'red') {
+                        statusGrid[startRow][col] = 'black';
+                    } else if (statusGrid[startRow][col] !== 'green' && statusGrid[startRow][col] !== 'red' && statusGrid[startRow][col] !== 'black') {
+                        statusGrid[startRow][col] = 'yellow';
+                    }
                 }
+
+                const proximoProcesso = fila.find(p => {
+                    const deadlineProximo = p.processoDeadline!;
+                    return p.chegada <= processoTerminou && deadlineProximo < processoDeadline;
+                });
+
+                if (proximoProcesso && processoAtual.duracao > 0) {
+                    fila.push(processoAtual);
+                    processoAtual = null;
+                } else if (processoAtual.duracao > 0) {
+                    fila.unshift(processoAtual);
+                    processoAtual = null;
+                }
+
+                numColunas = Math.max(numColunas, processoTerminou);
             }
-
-            const proximoProcesso = fila.find(p => {
-                const deadlineProximo = p.chegada + p.deadline;
-                return p.chegada <= processoTerminou && deadlineProximo < processoDeadline;
-            });
-
-            if (proximoProcesso && processoAtual.duracao > 0) {
-                fila.push(processoAtual);
-                processoAtual = proximoProcesso;
-                
-            } else if (processoAtual.duracao > 0) {
-                fila.unshift(processoAtual);
-            }
-
-            numColunas = Math.max(numColunas, processoTerminou);
         }
 
         for (let row = 0; row < NUM_LINHAS; row++) {
@@ -139,11 +146,15 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                 }
             }
         }
+        const TurnaroundTime = nonWhiteCells / linhas;
 
-        return nonWhiteCells / linhas;
+        return {
+            nonWhiteCells,
+            TurnaroundTime,
+        };
     };
-
-    const turnaroundTime = calculateTurnaroundTime();
+    
+    const { nonWhiteCells, TurnaroundTime } = calculateTurnaroundTime();
 
     const [isDetailVisible, setIsDetailVisible] = useState(false);
 
@@ -163,7 +174,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
                                 <span>{`Código: ${processo.codigo}`}</span>
                                 <span>{` Chegada: ${processo.chegada}`}</span>
                                 <span>{` Duração: ${processo.salvarDuracao}`}</span>
-                                <span>{` Deadline: ${processo.deadline}`}</span>
+                                <span>{` Deadline: ${processo.processoDeadline}`}</span>
                             </li>
                         ))}
                     </ul>
@@ -184,7 +195,7 @@ const EDF = ({ linhas, tabela, sobrecarga, quantum }: Props) => {
 
             <div className="mt-4">
                 <h4 className="text-lg font-extrabold">Turnaround:</h4>
-                <p>{turnaroundTime.toFixed(2)}</p>
+                <p>{nonWhiteCells}/{NUM_LINHAS} =  {TurnaroundTime.toFixed(2)}</p>
             </div>
         </div>
     );

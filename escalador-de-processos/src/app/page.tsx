@@ -81,9 +81,9 @@ export default function Home() {
           />
         </div>
         <Modal numeroDoProcesso={numeroDoProcesso} onClick={handleCreateProcess} />
-        <TableContainer className="bg-slate-200 ">
+        <TableContainer className="bg-slate-200 space-y-2 ">
           {tabelaProcessos.map((processo) => (
-            <div key={processo.codigo} className="flex justify-between items-center p-2 border-b">
+            <div key={processo.codigo} className="flex justify-between items-center p-2   border-[3px] border-x-[5px] border-slate-300  shadow-md rounded-md ">
               <span className="font-bold">{`Processo:  ${processo.codigo}`}</span>
               <p className="font-bold"> {`Chegada:  ${processo.chegada}`} </p>
               <p className="font-bold"> {`Duração:  ${processo.duracao}`} </p>
