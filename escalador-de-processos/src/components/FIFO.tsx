@@ -23,7 +23,6 @@ const FIFO = ({ linhas, tabela }: Props) => {
         }
         return a.chegada - b.chegada;
     });
-console.log('nada')
     const createGridItems = () => {
         const items = []; 
         const statusGrid: string[][] = Array(NUM_LINHAS).fill(null).map(() => []); 
